@@ -1,0 +1,8 @@
+*.pyc
+*/*/.pyc
+*.txt
+data
+model
+*.log
+*/*.log
+*.csv
