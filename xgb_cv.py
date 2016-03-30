@@ -64,7 +64,7 @@ print(plst)
 # train model
 #model = xgb.train(plst, xgtrain, xgb_num_rounds)
 cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-		nfold=5, metrics='logloss', show_progress=True)
+		nfold=5, metrics='logloss', verbose_eval=True)
 
 
 '''
