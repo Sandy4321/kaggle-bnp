@@ -10,9 +10,10 @@ for column in train.columns:
     if train[column].dtype == 'object':
         #train[column] = pd.factorize(train[column])[0]
         #cate_col.append(column)
+	na_num = np.sum(train[column].isnull())
 	dist_num = np.unique(train[column]).shape[0]
 	dist_num_list.append(dist_num)
-	print '%s:%d' % (column, dist_num)
+	print '%s:%d:%d' % (column, dist_num, na_num)
 	'''
     	print np.max(train[column])
         print np.min(train[column])
