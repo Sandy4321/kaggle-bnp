@@ -4,8 +4,25 @@ import numpy as np
 import xgboost as xgb
 import cPickle as pk
 import gc
+import logging
+logging.basicConfig(filename='xgb_cv_onehot.log',level=logging.INFO)
+logger = logging.getLogger('xgb_cv_onehot')
+import time
 
 nan = 100000
+
+def get_params_list():
+    params = {}
+    params["objective"] = "binary:logistic"
+    params["eval_metric"] = "logloss"
+    params["eta"] = 0.1
+    params["min_child_weight"] = 1 
+    params["subsample"] = 1 
+    params["colsample_bytree"] = 0.3 
+    params["silent"] = 1
+    params["max_depth"] = 7
+    plst = list(params.items())
+    return plst
 
 def get_params():
     params = {}
@@ -14,11 +31,10 @@ def get_params():
     params["eta"] = 0.1
     params["min_child_weight"] = 1 
     params["subsample"] = 1 
-    params["colsample_bytree"] = 0.6
+    params["colsample_bytree"] = 0.3 
     params["silent"] = 1
-    params["max_depth"] = 7 
-    plst = list(params.items())
-    return plst
+    params["max_depth"] = 7
+    return params
 
 def factorize_category(df):
     for column in df.columns:
@@ -72,6 +88,13 @@ test_drop = test.drop(test_columns_to_drop, axis=1)
 
 onehot_feat, train_drop  = factorize_category_onehot(train_drop)
 train_drop['v22'] = pd.factorize(train_drop.v22, na_sentinel=nan)[0]
+
+'''
+# bayes encoding v22
+with open('data/v22_bayes.pkl', 'r') as f:
+    train_drop['v22'] = pk.load(f)
+'''
+
 train_drop.fillna(nan,inplace=True)
 
 #train_columns_to_drop = ['ID', 'target', 'v107', 'v110']
@@ -85,19 +108,35 @@ num_classes = 2
 
 
 
-print train_drop.values.shape
-print onehot_feat.shape
 train_feat_final = np.hstack([train_drop.values, onehot_feat])
 
 #valid_feat_final = model.transform(valid_feat_final)
 
 xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
-# get the parameters for xgboost
-plst = get_params()
-print(plst)
+# params to be searched 
+params = get_params()
+min_child_weight_list = [1, 10, 25] 
+subsample_list = [0.3, 0.6, 0.9, 1]
+colsample_bytree_list = [0.3, 0.6, 0.9, 1]
+max_depth_list = [4, 6, 8, 10, 12]
+params_list = []
+for min_child_weight in min_child_weight_list:
+    for subsample in subsample_list:
+        for colsample_bytree in colsample_bytree_list:
+            for max_depth in max_depth_list:
+                params['min_child_weight'] = min_child_weight
+                params['subsample'] = subsample
+                params['colsample_bytree'] = colsample_bytree
+                params['max_depth'] = max_depth
+                plst = list(params.items())
+                params_list.append(plst)
 
 # train model
 #model = xgb.train(plst, xgtrain, xgb_num_rounds)
-cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-		nfold=5, metrics='logloss', verbose_eval=True)
+#cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
+#	nfold=5, metrics='logloss', verbose_eval=True)
+for plst in params_list:
+    logger.info(str(plst) + time.strftime("%Y-%m-%d %H:%M:%S"))
+    cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
+	    nfold=5, metrics='logloss', show_progress=True, early_stopping_rounds=7)
