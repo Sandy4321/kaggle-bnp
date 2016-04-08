@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter
+from preprocess import find_delimiter, compute_nan_feat
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -42,6 +42,12 @@ print 'load data'
 train = pd.read_csv('./data/train.csv')
 test = pd.read_csv('./data/test.csv')
 
+train = compute_nan_feat(train)
+test = compute_nan_feat(test)
+
+'''
+################################################
+# inverse feature scaling
 #train_id = train['ID'].values
 #train_target = train['target'].values
 num_vars = ['v1', 'v2', 'v4', 'v5', 'v6', 'v7', 'v9', 'v10', 'v11',
@@ -65,6 +71,8 @@ for c in num_vars:
     delimiter = find_delimiter(vs, c)
     train[c] *= 1/delimiter
     test[c] *= 1/delimiter
+################################################
+'''
 
 train_feat = train.drop(train_columns_to_drop, axis=1) 
 test_feat = test.drop(test_columns_to_drop, axis=1) 
@@ -82,12 +90,17 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
 # grid search
 params = get_params()
-params["eta"] = 0.05
+params["eta"] = 0.1
 
-min_child_weight_list = [1, 5, 10]
-subsample_list = [0.6, 0.8, 1]
-colsample_bytree_list = [0.6, 0.8, 1]
-max_depth_list = [8, 10, 12]
+min_child_weight_list = [1]
+subsample_list = [0.9]
+colsample_bytree_list = [0.9]
+max_depth_list = [10]
+
+#min_child_weight_list = [1, 5, 10]
+#subsample_list = [0.6, 0.8, 1]
+#colsample_bytree_list = [0.6, 0.8, 1]
+#max_depth_list = [8, 10, 12]
 params_list = []
 for min_child_weight in min_child_weight_list:
     for subsample in subsample_list:
@@ -105,7 +118,7 @@ for min_child_weight in min_child_weight_list:
 for plst in params_list:
     log(log_file, str(plst))
     cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-	nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=10)
+	nfold=5, metrics='logloss', show_progress=True, early_stopping_rounds=10)
 
 
 '''
