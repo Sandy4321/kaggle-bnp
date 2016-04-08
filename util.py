@@ -14,3 +14,19 @@ def logloss(preds, targets):
     res = -res
 
     return res
+
+
+def get_params():
+    params = {}
+    params["objective"] = "binary:logistic"
+    params["eval_metric"] = "logloss"
+    params["eta"] = 0.1
+    params["min_child_weight"] = 1
+    params["subsample"] = 1
+    params["colsample_bytree"] = 0.3
+    params["silent"] = 1
+    params["max_depth"] = 7
+    return params
+
+def log(f, line):
+   f.write(line + '\n') 

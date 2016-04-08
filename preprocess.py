@@ -48,5 +48,18 @@ def bayes_encoding(column, target):
     
     return ratio_arr, count_dict, nan_ratio
 
+def find_delimiter(df, col):
+    """
+    Function that trying to find an approximate delimiter used for scaling.
+    So we can undo the feature scaling.
+    """
+    vals = df[col].dropna().sort_values().round(8)
+    #print vals
+    vals = pd.rolling_apply(vals, 2, lambda x: x[1] - x[0])
+    vals = vals[vals > 0.000001]
+    #print vals.values
+    #print vals.value_counts()
+    return vals.value_counts().idxmax() 
+
 
     

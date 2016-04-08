@@ -3,7 +3,10 @@ import numpy as np
 import xgboost as xgb
 import cPickle as pk
 from preprocess import find_delimiter
-from util import get_params
+from util import get_params, log
+
+log_file = open(__file__ + '_log', 'w')
+#log_file = open('nohup.out', 'w')
 
 
 def get_params_list():
@@ -79,12 +82,14 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
 # grid search
 params = get_params()
-params["eta"] = 0.1
+params["eta"] = 0.05
 
-min_child_weight_list = [1]
-subsample_list = [0.6, 0.9]
-colsample_bytree_list = [0.6, 0.9]
-max_depth_list = [4, 6]
+min_child_weight_list = [1, 5, 10]
+subsample_list = [0.6, 0.8, 1]
+colsample_bytree_list = [0.6, 0.8, 1]
+max_depth_list = [8, 10, 12]
+#colsample_bytree_list = [0.6, 0.9]
+#max_depth_list = [8, 10, 12]
 params_list = []
 for min_child_weight in min_child_weight_list:
     for subsample in subsample_list:
@@ -100,7 +105,7 @@ for min_child_weight in min_child_weight_list:
                 params_list.append(plst)
 
 for plst in params_list:
-
+    log(log_file, str(plst))
     cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
 	nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=10)
 
