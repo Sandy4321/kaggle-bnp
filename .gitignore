@@ -7,3 +7,4 @@ model
 */*.log
 *.csv
 nohup.out
+*py_log

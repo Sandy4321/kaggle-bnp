@@ -61,5 +61,23 @@ def find_delimiter(df, col):
     #print vals.value_counts()
     return vals.value_counts().idxmax() 
 
+def compute_nan_feat(df):
+    sum_list = []
+    var_list = []
+    for dummy_i in xrange(df.shape[0]):
+        if dummy_i % 100 == 0:
+            print 'row = %d' % dummy_i
+        row = df.iloc[dummy_i, :]
+        isnull = row.isnull()
+        s = np.sum(isnull)
+        v = np.var(isnull)
+        sum_list.append(s)
+        var_list.append(v)
+
+    df['sum_nan'] = pd.Series(sum_list, index=df.index)
+    df['var_nan'] = pd.Series(var_list, index=df.index)
+
+    return df
+
 
     
