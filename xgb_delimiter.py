@@ -15,8 +15,8 @@ def get_params_list():
     params["eval_metric"] = "logloss"
     params["eta"] = 0.01
     params["min_child_weight"] = 1 
-    params["subsample"] = 0.9 
-    params["colsample_bytree"] = 0.9
+    params["subsample"] = 1 
+    params["colsample_bytree"] = 0.6
     params["silent"] = 1
     params["max_depth"] = 10 
     plst = list(params.items())
@@ -68,61 +68,27 @@ for c in num_vars:
 
 train_feat = train.drop(train_columns_to_drop, axis=1) 
 test_feat = test.drop(test_columns_to_drop, axis=1) 
-factorize_category(train_feat)
-factorize_category(test_feat)
+factorize_category(train_feat, test_feat)
 train_feat.fillna(-1,inplace=True)
 test_feat.fillna(-1,inplace=True)
 
 
-train_feat_final = train_feat
 
 
-xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
+xgtrain = xgb.DMatrix(train_feat, train['target'].values)
+xgtest = xgb.DMatrix(test_feat)
+# get the parameters for xgboost
+plst = get_params_list()
+print(plst)
+
+# train model
+model = xgb.train(plst, xgtrain, xgb_num_rounds)
+test_preds = model.predict(xgtest, ntree_limit=model.best_iteration)
+
+preds_out = pd.DataFrame({"ID": test['ID'].values, "PredictedProb": test_preds})
+preds_out = preds_out.set_index('ID')
+preds_out.to_csv('xgb_drop_feat.csv')
+print 'finish'
 
 
-# grid search
-params = get_params()
-params["eta"] = 0.01
 
-'''
-min_child_weight_list = [1, 5, 10]
-subsample_list = [0.6, 0.8, 1]
-colsample_bytree_list = [0.6, 0.8, 1]
-max_depth_list = [8, 10, 12]
-'''
-min_child_weight_list = [1]
-subsample_list = [1]
-colsample_bytree_list = [0.6]
-max_depth_list = [10]
-#colsample_bytree_list = [0.6, 0.9]
-#max_depth_list = [8, 10, 12]
-params_list = []
-for min_child_weight in min_child_weight_list:
-    for subsample in subsample_list:
-        for colsample_bytree in colsample_bytree_list:
-            for max_depth in max_depth_list:
-
-                params['min_child_weight'] = min_child_weight
-                params['subsample'] = subsample
-                params['colsample_bytree'] = colsample_bytree
-                params['max_depth'] = max_depth
-
-                plst = list(params.items())
-                params_list.append(plst)
-
-for plst in params_list:
-    log(log_file, str(plst))
-    cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-	nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=20)
-
-
-'''
-valid_preds = model.predict(xgvalid, ntree_limit=model.best_iteration)
-valid_target = train[ind==1]['target'].values
-res = 0
-for preds, target in zip(valid_preds, valid_target):
-    res += target * np.log(preds) + (1 - target) * np.log(1 - preds) 
-res /= len(valid_target)
-res = -res
-print res
-'''
