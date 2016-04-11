@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter, compute_nan_feat
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_na_bin
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -44,6 +44,18 @@ test = pd.read_csv('./data/test.csv')
 
 train = compute_nan_feat(train)
 test = compute_nan_feat(test)
+
+
+################################################
+# add nan binary feat
+train_test = pd.concat([train, test])
+train_test = add_na_bin(train_test)
+train = train_test[train_test.target.isnull() == False]
+test = train_test[train_test.target.isnull() == True]
+test.drop(['target'], axis=1)
+print train
+print train.shape
+
 
 '''
 ################################################
@@ -92,15 +104,15 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 params = get_params()
 params["eta"] = 0.05
 
-min_child_weight_list = [1]
-subsample_list = [1]
-colsample_bytree_list = [0.6]
-max_depth_list = [10]
+#min_child_weight_list = [1]
+#subsample_list = [1]
+#colsample_bytree_list = [0.6]
+#max_depth_list = [10]
 
-#min_child_weight_list = [1, 5, 10]
-#subsample_list = [0.6, 0.8, 1]
-#colsample_bytree_list = [0.6, 0.8, 1]
-#max_depth_list = [8, 10, 12]
+min_child_weight_list = [5, 10]
+subsample_list = [0.6]
+colsample_bytree_list = [0.6]
+max_depth_list = [8]
 params_list = []
 for min_child_weight in min_child_weight_list:
     for subsample in subsample_list:

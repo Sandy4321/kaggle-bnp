@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter, compute_nan_feat
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -44,6 +44,16 @@ test = pd.read_csv('./data/test.csv')
 
 train = compute_nan_feat(train)
 test = compute_nan_feat(test)
+
+
+################################################
+# add pca nan binary feat
+train_test = pd.concat([train, test])
+train_test = add_na_bin_pca(train_test)
+train = train_test[train_test.target.isnull() == False]
+test = train_test[train_test.target.isnull() == True]
+test.drop(['target'], axis=1)
+
 
 '''
 ################################################

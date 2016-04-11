@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import cPickle as pk
 
 nan = 100000
 
@@ -75,9 +76,40 @@ def compute_nan_feat(df):
         var_list.append(v)
 
     df['sum_nan'] = pd.Series(sum_list, index=df.index)
-    df['var_nan'] = pd.Series(var_list, index=df.index)
+    # df['var_nan'] = pd.Series(var_list, index=df.index)
 
     return df
 
 
-    
+
+def add_na_bin_pca(train_test):
+    with open('data/na_bin_tsvd_2.pkl', 'r') as f:
+    	na_bin_pca = pk.load(f)
+    	na_df = pd.DataFrame(na_bin_pca)
+
+    for c in na_df.columns:
+    	train_test[c] = na_df[c]
+
+    return train_test
+
+ 
+def add_na_bin(train_test):
+    with open('data/na_bin.pkl', 'r') as f:
+    	na_bin = pk.load(f)
+    	na_df = pd.DataFrame(na_bin)
+
+    na_df.columns = range(len(na_df.columns))
+    for c in na_df.columns:
+    	train_test[c] = na_df[c]
+
+    return train_test
+
+def add_cate_comb(train_test):
+    #with open('data/comb_cate.pkl', 'r') as f:
+    with open('data/comb_cate_v22_v56.pkl', 'r') as f:
+    	df = pk.load(f)
+
+    for c in df.columns:
+    	train_test[c] = df[c]
+
+    return train_test
