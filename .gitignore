@@ -9,3 +9,4 @@ model
 nohup.out
 *py_log
 *out
+*log_param

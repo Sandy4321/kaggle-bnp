@@ -3,7 +3,7 @@ import numpy as np
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-from preprocess import factorize_category
+from preprocess import factorize_category_both
 import cPickle as pk
 
 def get_params():
@@ -33,7 +33,7 @@ submission = pd.read_csv('./data/sample_submission.csv')
 train_feat = train.drop(columns_to_drop, axis=1)
 test_feat = test.drop('ID', axis=1)
 
-factorize_category(train_feat, test_feat)
+factorize_category_both(train_feat, test_feat)
 train_feat.fillna(-1,inplace=True)
 test_feat.fillna(-1,inplace=True)
 #all_data = train.append(test)
@@ -55,6 +55,9 @@ feat_imp = np.array(feat_imp)
 np.savetxt('feat_imp.txt',feat_imp)
 #model = SelectFromModel(clf, prefit=True)
 #model_file = open('model/rf_feat_select.pickle', 'w')
+
+'''
 model_file = open('model/rf_200.pickle', 'w')
 pk.dump(clf, model_file)
+'''
 

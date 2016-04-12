@@ -113,3 +113,13 @@ def add_cate_comb(train_test):
     	train_test[c] = df[c]
 
     return train_test
+
+def add_num_comb(train_test):
+    #with open('data/comb_cate.pkl', 'r') as f:
+    with open('data/comb_num_1.pkl', 'r') as f:
+    	df = pk.load(f)
+
+    for c in df.columns:
+    	train_test[c] = df[c]
+
+    return train_test
