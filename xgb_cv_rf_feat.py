@@ -5,7 +5,7 @@ import cPickle as pk
 def get_params():
     params = {}
     params["objective"] = "binary:logistic"
-    params["eta"] = 0.1
+    params["eta"] = 0.01
     params["min_child_weight"] = 10 
     params["subsample"] = 1.0 
     params["colsample_bytree"] = 0.2

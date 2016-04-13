@@ -22,30 +22,30 @@ for column in tt.columns:
     if train[column].dtype != 'object' and column != 'ID' and column != 'target':
 	to_comb.append(column)
 '''
-# top 30 importance (random forrest) numeric feature
-to_comb = ['v50', 'v12', 'v10', 'v114', 'v34', 'v40', 'v21', 'v14', 'v62', 'v129', 'v72', 'v82', 'v36', 'v6', 'v120', 'v98', 'v99', 'v28', 'v124', 'v88', 'v78', 'v57', 'v115', 'v68', 'v70', 'v69', 'v117', 'v39', 'v81', 'v16']
 
-nan_num_list = []
+to_comb = ['v50', 'v12', 'v114', 'v34', 'v40', 'v10', 'v21', 'v14', 'v62', 'v129', 'v72', 'v82', 'v120', 'v36', 'v6', 'v98', 'v124', 'v99', 'v57', 'v28', 'v88', 'v115', 'v68', 'v69', 'v119', 'v81', 'v16', 'v70', 'v78', 'v5']
+
+
 res_df = pd.DataFrame()
 for i in xrange(len(to_comb)):
     for j in xrange(i+1, len(to_comb)):
         mul_column = '%s_M_%s' % (to_comb[i], to_comb[j])
         div_column = '%s_D_%s' % (to_comb[i], to_comb[j])
-        print mul_column
-        mul_vals = []
-        div_vals = []
-        for k in xrange(tt.shape[0]):
-            mul_val = tt[to_comb[i]].iloc[k] * tt[to_comb[j]].iloc[k]
-            mul_val = np.log(1+mul_val)
-            div_val = tt[to_comb[i]].iloc[k] / tt[to_comb[j]].iloc[k]
-            div_val = np.log(1+div_val)
-            mul_vals.append(mul_val)
-            div_vals.append(div_val)
-        res_df[mul_column] = pd.Series(mul_vals, index=tt.index)
-        res_df[div_column] = pd.Series(div_vals, index=tt.index)
-        #nan_num_list.append(np.sum(res_df[mul_column].isnull()))
 
-#print nan_num_list
+	print mul_column
+	mul_vals = []
+	div_vals = []
+ 	for k in xrange(tt.shape[0]):
+	    mul_val = tt[to_comb[i]].iloc[k] * tt[to_comb[j]].iloc[k]
+	    mul_val = np.log(1+mul_val)
+	    div_val = tt[to_comb[i]].iloc[k] / tt[to_comb[j]].iloc[k]
+	    div_val = np.log(1+div_val)
+
+	    mul_vals.append(mul_val)
+	    div_vals.append(div_val)
+	res_df[mul_column] = pd.Series(mul_vals, index=tt.index)
+	res_df[div_column] = pd.Series(div_vals, index=tt.index)
+
 
 with open('data/comb_num_1.pkl', 'w') as f:
     pk.dump(res_df, f)
