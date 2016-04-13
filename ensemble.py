@@ -1,7 +1,7 @@
 import pandas as pd
 
 res_list = ['extra_trees.csv', 'xgb_cate_comb.csv', 'xgb_rf_feat.csv'] # ensemble1
-res_list = ['extra_trees.csv', 'xgb_cate_comb.csv']
+res_list = ['extra_trees.csv', 'xgb_cate_comb.csv', 'xgb_delimiter.csv']
 
 df = pd.read_csv(res_list[0])
 res_pred = df['PredictedProb']
@@ -15,7 +15,7 @@ res_pred /= len(res_list)
 
 preds_out = pd.DataFrame({"ID": ids, "PredictedProb": res_pred.values})
 preds_out = preds_out.set_index('ID')
-preds_out.to_csv('ensemble2.csv')
+preds_out.to_csv('ensemble3.csv')
 print 'finish'
 
 

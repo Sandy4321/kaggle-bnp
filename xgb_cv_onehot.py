@@ -116,10 +116,10 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
 # params to be searched 
 params = get_params()
-min_child_weight_list = [1, 10, 25] 
-subsample_list = [0.3, 0.6, 0.9, 1]
-colsample_bytree_list = [0.3, 0.6, 0.9, 1]
-max_depth_list = [4, 6, 8, 10, 12]
+min_child_weight_list = [1] 
+subsample_list = [1]
+colsample_bytree_list = [0.6]
+max_depth_list = [10]
 params_list = []
 for min_child_weight in min_child_weight_list:
     for subsample in subsample_list:
@@ -139,4 +139,4 @@ for min_child_weight in min_child_weight_list:
 for plst in params_list:
     logger.info(str(plst) + time.strftime("%Y-%m-%d %H:%M:%S"))
     cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-	    nfold=5, metrics='logloss', show_progress=True, early_stopping_rounds=7)
+	    nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=10)
