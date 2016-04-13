@@ -4,6 +4,8 @@ import xgboost as xgb
 import cPickle as pk
 from preprocess import find_delimiter
 from util import get_params, log
+from preprocess import factorize_category_both
+
 
 log_file = open(__file__ + '_log', 'w')
 #log_file = open('nohup.out', 'w')
@@ -35,7 +37,7 @@ test_columns_to_drop = ['ID'] + high_corr_columns
 
 #train_columns_to_drop = ['ID', 'target', 'v107', 'v110']
 #test_columns_to_drop = ['ID', 'v107', 'v110']
-xgb_num_rounds = 1000000
+xgb_num_rounds = 1500
 #xgb_num_rounds = 100
 num_classes = 2
 print 'load data'
@@ -68,7 +70,7 @@ for c in num_vars:
 
 train_feat = train.drop(train_columns_to_drop, axis=1) 
 test_feat = test.drop(test_columns_to_drop, axis=1) 
-factorize_category(train_feat, test_feat)
+factorize_category_both(train_feat, test_feat)
 train_feat.fillna(-1,inplace=True)
 test_feat.fillna(-1,inplace=True)
 
@@ -87,7 +89,7 @@ test_preds = model.predict(xgtest, ntree_limit=model.best_iteration)
 
 preds_out = pd.DataFrame({"ID": test['ID'].values, "PredictedProb": test_preds})
 preds_out = preds_out.set_index('ID')
-preds_out.to_csv('xgb_drop_feat.csv')
+preds_out.to_csv('xgb_delimiter.csv')
 print 'finish'
 
 

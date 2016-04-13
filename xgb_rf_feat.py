@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import xgboost as xgb
-from preprocess import factorize_category 
+from preprocess import factorize_category_both
 import cPickle as pk
 from sklearn.feature_selection import SelectFromModel
 
@@ -9,7 +9,7 @@ from sklearn.feature_selection import SelectFromModel
 def get_params():
     params = {}
     params["objective"] = "binary:logistic"
-    params["eta"] = 0.1
+    params["eta"] = 0.01
     params["min_child_weight"] = 10 
     params["subsample"] = 1
     params["colsample_bytree"] = 0.2
@@ -27,7 +27,7 @@ def factorize_category(train, test):
 '''
         
 columns_to_drop = ['ID', 'target']
-xgb_num_rounds = 300 
+xgb_num_rounds = 1500 
 num_classes = 2
 print 'load data'
 train = pd.read_csv('./data/train.csv')
@@ -40,7 +40,7 @@ train_target = train['target'].values
 train_feat = train.drop(columns_to_drop, axis=1)
 test_feat = test.drop('ID', axis=1)
 
-factorize_category(train_feat, test_feat)
+factorize_category_both(train_feat, test_feat)
 #factorize_category(test_feat)
 train_feat.fillna(-1,inplace=True)
 test_feat.fillna(-1,inplace=True)

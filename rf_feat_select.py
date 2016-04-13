@@ -56,8 +56,8 @@ np.savetxt('feat_imp.txt',feat_imp)
 #model = SelectFromModel(clf, prefit=True)
 #model_file = open('model/rf_feat_select.pickle', 'w')
 
-'''
+''
 model_file = open('model/rf_200.pickle', 'w')
 pk.dump(clf, model_file)
-'''
+
 
