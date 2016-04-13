@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
+<<<<<<< HEAD
+=======
 from sklearn.feature_selection import SelectFromModel
+>>>>>>> a02ac8cd74ccc71b4c3877c0f6fe76cc493d8e20
 from preprocess import factorize_category_both
 import cPickle as pk
 
@@ -56,7 +59,6 @@ np.savetxt('feat_imp.txt',feat_imp)
 #model = SelectFromModel(clf, prefit=True)
 #model_file = open('model/rf_feat_select.pickle', 'w')
 
-''
 model_file = open('model/rf_200.pickle', 'w')
 pk.dump(clf, model_file)
 

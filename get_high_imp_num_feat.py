@@ -14,4 +14,3 @@ for name in feat_name:
         num_name.append(name)
 
 print num_name[:30]
-

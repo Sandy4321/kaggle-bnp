@@ -31,6 +31,7 @@ for i in xrange(len(to_comb)):
     for j in xrange(i+1, len(to_comb)):
         mul_column = '%s_M_%s' % (to_comb[i], to_comb[j])
         div_column = '%s_D_%s' % (to_comb[i], to_comb[j])
+
 	print mul_column
 	mul_vals = []
 	div_vals = []
