@@ -29,24 +29,26 @@ test_feat.fillna(-1,inplace=True)
 
 #X_train, X_valid, y_train, y_valid = train_test_split(
 #    train_feat.values, train_target, test_size=0.2, random_state=42)
-batch_size = 128
-nb_epoch = 20
+batch_size = 256 
+nb_epoch = 2
 
 model = Sequential()
-model.add(Dense(512, input_shape=(train_feat.shape[1],)))
-model.add(Activation('relu'))
-model.add(Dropout(0.2))
-model.add(Dense(512))
-model.add(Activation('relu'))
-model.add(Dropout(0.2))
-model.add(Dense(10))
-model.add(Activation('softmax'))
+model.add(Dense(2000, input_dim=train_feat.shape[1], init='uniform', activation='relu'))
+model.add(Dense(2000, input_dim=train_feat.shape[1], init='uniform', activation='relu'))
+model.add(Dense(2000, input_dim=train_feat.shape[1], init='uniform', activation='relu'))
+model.add(Dense(2000, input_dim=train_feat.shape[1], init='uniform', activation='relu'))
+#model.add(Dropout(0.2))
+#model.add(Dense(512))
+#model.add(Activation('relu'))
+#model.add(Dropout(0.2))
+model.add(Dense(1, activation='sigmoid'))
 
 model.summary()
 
+sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='binary_crossentropy',
-              optimizer=SGD(),
-              metrics=['logloss'])
+              optimizer=sgd,
+              metrics=['accuracy'])
 
 #history = model.fit(X_train, y_train,
 #                   batch_size=batch_size, nb_epoch=nb_epoch,
@@ -55,3 +57,7 @@ model.compile(loss='binary_crossentropy',
 history = model.fit(train_feat.values, train_target,
                     batch_size=batch_size, nb_epoch=nb_epoch,
                     verbose=1, validation_split=0.2)
+
+print test_feat.shape
+score = model.predict(test_feat, verbose=1)
+print score

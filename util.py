@@ -1,4 +1,5 @@
 import numpy as np 
+from sklearn.metrics import mutual_info_score
 
 def logloss(preds, targets):
     res = 0
@@ -30,3 +31,10 @@ def get_params():
 
 def log(f, line):
    f.write(line + '\n') 
+
+
+# calculate mutual information
+def calc_MI(x, y, bins):
+    c_xy = np.histogram2d(x, y, bins)[0]
+    mi = mutual_info_score(None, None, contingency=c_xy)
+    return mi

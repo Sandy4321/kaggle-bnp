@@ -51,6 +51,7 @@ test = compute_nan_feat(test)
 train_test = pd.concat([train, test])
 train_test = add_cate_comb(train_test)
 train_test = add_num_comb(train_test)
+train_test.replace(np.inf, -1, inplace=True) # must add!
 train = train_test[train_test.target.isnull() == False]
 test = train_test[train_test.target.isnull() == True]
 test.drop(['target'], axis=1)
@@ -103,9 +104,9 @@ params = get_params()
 params["eta"] = 0.05
 
 min_child_weight_list = [1]
-subsample_list = [0.8, 1]
-colsample_bytree_list = [0.4, 0.6, 0.8, 1]
-max_depth_list = [6, 8, 10, 12]
+subsample_list = [1]
+colsample_bytree_list = [0.6]
+max_depth_list = [10]
 
 #min_child_weight_list = [1, 5, 10]
 #subsample_list = [0.6, 0.8, 1]
