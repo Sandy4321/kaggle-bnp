@@ -15,6 +15,9 @@ import random; random.seed(2016)
 
 def flog_loss(ground_truth, predictions):
     flog_loss_ = -log_loss(ground_truth, predictions) #, eps=1e-15, normalize=True, sample_weight=None)
+    print ground_truth.shape
+    print predictions.shape
+    print 'flog_loss = %f' % flog_loss_
     return flog_loss_
 logloss_metric  = make_scorer(flog_loss, greater_is_better=False)
 
@@ -95,7 +98,8 @@ rfc_param_grid = [
   {'n_estimators': [500, 1000, 2000, 2500], 'max_features': [25, 50], 'criterion': ['gini', 'entropy'], 'max_depth': [25, 35, 50], 'min_samples_leaf': [2, 4]},
  ]
 for c in clf:
-    model = GridSearchCV(estimator=clf[c], param_grid=rfc_param_grid, n_jobs =-1, cv=2, verbose=1, scoring=logloss_metric)
+    #model = GridSearchCV(estimator=clf[c], param_grid=rfc_param_grid, n_jobs =-1, cv=2, verbose=1, scoring=logloss_metric)
+    model = GridSearchCV(estimator=clf[c], param_grid=rfc_param_grid, n_jobs =-1, cv=2, verbose=1, scoring='log_loss')
     model.fit(X_train,y_train) 
     print("Best parameters set found on development set:")
     print()
