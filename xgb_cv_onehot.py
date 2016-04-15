@@ -61,11 +61,6 @@ def factorize_category_onehot(df):
     del df_onehot
     gc.collect()
 
-    # df_res = pd.DataFrame(columns=['v22', 'onehot'])
-    # df_res['v22'] = pd.factorize(df.v22, na_sentinel=100000)[0]
-
-    # del df
-    # gc.collect()
     df = df.drop(str_columns, axis=1)
 
     # return onehot_feat.toarray()

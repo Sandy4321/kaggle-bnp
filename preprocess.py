@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import cPickle as pk
+from sklearn.preprocessing import OneHotEncoder
 
 nan = 100000
 
@@ -123,3 +124,22 @@ def add_num_comb(train_test):
     	train_test[c] = df[c]
 
     return train_test
+
+def add_v22_onehot(train_test):
+    #with open('data/comb_cate.pkl', 'r') as f:
+    with open('data/v22_onehot0.00005.pkl', 'r') as f:
+    	df = pk.load(f)
+
+    for c in df.columns:
+    	train_test[c] = df[c]
+
+    return train_test
+
+def compute_onehot_feat(column):
+    df_onehot = pd.DataFrame(columns=[column.name])
+    df_onehot[column.name] = pd.factorize(column, na_sentinel=nan)[0]
+
+    enc = OneHotEncoder()
+    onehot_feat = enc.fit_transform(df_onehot)
+
+    return onehot_feat.toarray() 

@@ -1,4 +1,5 @@
 import numpy as np 
+import pandas as pd
 from sklearn.metrics import mutual_info_score
 import sys
 
@@ -49,6 +50,33 @@ def discret(val, bins):
             print bins
             print val
             sys.exit(-1)
+
+# for category feature
+def calc_MI_cate_feat_target(column, target, num_bins):
+
+    vals, tmp_indexer = pd.factorize(column, na_sentinel=-1)
+
+    p_neg = 0.238801
+    p_pos = 0.761199
+
+    max_cate = np.max(vals)
+    densitys, bin_edges = np.histogram(vals, density=True)
+    #print densitys
+
+
+    #print 'start'
+    final_mi = 0
+    for level in xrange(-1, max_cate+1):
+        p_cate_pos = np.sum((vals == level) & (target == 1)) / float(column.shape[0])
+        p_cate_neg = np.sum((vals == level) & (target == 0)) / float(column.shape[0])
+        p_cate = np.sum((vals == level)) / float(column.shape[0])
+        if p_cate_pos == 0 or p_cate_neg == 0:
+            continue
+        final_mi += p_cate_pos * np.log2(p_cate_pos / (p_cate * p_pos))
+        final_mi += p_cate_neg * np.log2(p_cate_neg / (p_cate * p_neg))
+        #print '%d, %f' %(level, final_mi)
+
+    return final_mi
 
 def calc_MI_feat_target(column, target, num_bins):
 
