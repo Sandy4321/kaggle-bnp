@@ -27,6 +27,8 @@ def run(train_file, test_file, predict_res_file):
     test = pd.read_csv(test_file)
     id_test = test['ID'].values
     test = test.drop(['ID','v8','v23','v25','v31','v36','v37','v46','v51','v53','v54','v63','v73','v75','v79','v81','v82','v89','v92','v95','v105','v107','v108','v109','v110','v116','v117','v118','v119','v123','v124','v128'],axis=1)
+
+    # very import, in case we use train file as test file
     if 'train' in test_file:
         test = test.drop(['target'], axis=1)
 
@@ -75,6 +77,8 @@ def run(train_file, test_file, predict_res_file):
     print('Training...')
     extc = ExtraTreesClassifier(n_estimators=1000,max_features= 50,criterion= 'entropy',min_samples_split= 4,
                             max_depth= 35, min_samples_leaf= 2, n_jobs = -1)      
+    #extc = ExtraTreesClassifier(n_estimators=2,max_features= 50,criterion= 'entropy',min_samples_split= 4,
+    #                        max_depth= 35, min_samples_leaf= 2, n_jobs = -1)      
 
     extc.fit(X_train,target) 
 

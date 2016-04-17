@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 import cPickle as pk
@@ -121,6 +122,21 @@ def add_cate_comb(train_test):
 
     for c in df.columns:
     	train_test[c] = df[c]
+
+    return train_test
+
+def add_cate_comb_reindex(train_test, idx_file):
+    idx = np.loadtxt(idx_file)
+    idx = np.asarray(idx, np.int)
+
+    #with open('data/comb_cate.pkl', 'r') as f:
+    with open('data/comb_cate_v22_v56.pkl', 'r') as f:
+    	df = pk.load(f)
+
+    reidx_df = df.iloc[idx, :]
+
+    for c in df.columns:
+    	train_test[c] = reidx_df[c]
 
     return train_test
 

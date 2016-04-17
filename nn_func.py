@@ -104,6 +104,9 @@ def run(train_file, test_file, predict_res_file):
     drop_list=['v91','v1', 'v8', 'v10', 'v15', 'v17', 'v25', 'v29', 'v34', 'v41', 'v46', 'v54', 'v64', 'v67', 'v97', 'v105', 'v111', 'v122']
     train = train.drop(['ID','target'] + drop_list,axis=1).fillna(-999)
     test = test.drop(['ID'] + drop_list,axis=1).fillna(-999)
+    if 'train' in test_file:
+        test = test.drop(['target'], axis=1)
+
 
     refcols=list(train.columns)
 
@@ -123,14 +126,21 @@ def run(train_file, test_file, predict_res_file):
 
     clf = ensemble.ExtraTreesClassifier(n_estimators=750,max_features=50,criterion= 'entropy',min_samples_split= 4,
                         max_depth= 35, min_samples_leaf= 2, n_jobs = -1, random_state=rnd)
+    #clf = ensemble.ExtraTreesClassifier(n_estimators=2,max_features=50,criterion= 'entropy',min_samples_split= 4,
+    #                    max_depth= 35, min_samples_leaf= 2, n_jobs = -1, random_state=rnd)
 
     clf.fit(train,target)
     pred_et=clf.predict_proba(test)
 
+    pd.DataFrame({"ID": id_test, "PredictedProb": pred_et[:,1]}).to_csv(predict_res_file,index=False)
+
+
+    '''
     submission=pd.read_csv('data/sample_submission.csv')
     submission.index=submission.ID
     submission.PredictedProb=pred_et[:,1]
     submission.to_csv(predict_res_file, index=False)
+    '''
 
 if __name__ == '__main__':
     train_file = sys.argv[1]
