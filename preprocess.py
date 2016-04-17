@@ -3,7 +3,9 @@ import numpy as np
 import cPickle as pk
 from sklearn.preprocessing import OneHotEncoder
 
-nan = 100000
+nan = 100000 
+#nan = -1 
+#nan = -999
 
 def factorize_category_both(train, test):
     for column in train.columns:
@@ -15,6 +17,8 @@ def factorize_category(df):
     for column in df.columns:
         if df[column].dtype == 'object':
             df[column] = pd.factorize(df[column], na_sentinel=nan)[0]
+   	else:
+	    df[column] = df[column].round(5)
 
 def category_to_ratio_bayes(column, count_dict, nan_ratio):
     ratio_list = []
@@ -63,9 +67,11 @@ def find_delimiter(df, col):
     #print vals.value_counts()
     return vals.value_counts().idxmax() 
 
+# should name as compute zero feat
 def compute_nan_feat(df):
     sum_list = []
     var_list = []
+    zero_list = []
     for dummy_i in xrange(df.shape[0]):
         if dummy_i % 100 == 0:
             print 'row = %d' % dummy_i
@@ -73,10 +79,13 @@ def compute_nan_feat(df):
         isnull = row.isnull()
         s = np.sum(isnull)
         v = np.var(isnull)
+        #num_zero = row[row == 0].shape[0]
         sum_list.append(s)
         var_list.append(v)
+  	#zero_list.append(num_zero)
 
     df['sum_nan'] = pd.Series(sum_list, index=df.index)
+    #df['num_zero'] = pd.Series(zero_list, index=df.index)
     # df['var_nan'] = pd.Series(var_list, index=df.index)
 
     return df
@@ -117,7 +126,7 @@ def add_cate_comb(train_test):
 
 def add_num_comb(train_test):
     #with open('data/comb_cate.pkl', 'r') as f:
-    with open('data/comb_num_1.pkl', 'r') as f:
+    with open('data/comb_num_0.01_filter.pkl', 'r') as f:
     	df = pk.load(f)
 
     for c in df.columns:
@@ -137,9 +146,19 @@ def add_v22_onehot(train_test):
 
 def compute_onehot_feat(column):
     df_onehot = pd.DataFrame(columns=[column.name])
-    df_onehot[column.name] = pd.factorize(column, na_sentinel=nan)[0]
+    #df_onehot[column.name] = pd.factorize(column, na_sentinel=nan)[0]
+    # nan should be non-negative
+    df_onehot[column.name] = pd.factorize(column, na_sentinel=1000000)[0]
 
     enc = OneHotEncoder()
     onehot_feat = enc.fit_transform(df_onehot)
 
     return onehot_feat.toarray() 
+
+def handle_v22(df):
+    df['v22-1'] = df['v22'].fillna('@@@@').apply(lambda x:'@'*(4-len(str(x)))+str(x)).apply(lambda x:ord(x[0]))
+    df['v22-2'] = df['v22'].fillna('@@@@').apply(lambda x:'@'*(4-len(str(x)))+str(x)).apply(lambda x:ord(x[1]))
+    df['v22-3'] = df['v22'].fillna('@@@@').apply(lambda x:'@'*(4-len(str(x)))+str(x)).apply(lambda x:ord(x[2]))
+    df['v22-4'] = df['v22'].fillna('@@@@').apply(lambda x:'@'*(4-len(str(x)))+str(x)).apply(lambda x:ord(x[3]))
+
+    return df

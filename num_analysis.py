@@ -12,6 +12,7 @@ for column in df.columns:
     cols.append(column)
 
 df.fillna(-1, inplace=True)
+# must have np.inf replaced
 df.replace(np.inf, -1, inplace=True)
 
 res = {}

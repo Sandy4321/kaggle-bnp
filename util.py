@@ -89,6 +89,7 @@ def calc_MI_feat_target(column, target, num_bins):
     values = column.values
     try:
         bins = [-999] + np.arange(min_val, max_val, (max_val-min_val)/float(num_bins)).tolist()
+	print '%f - %f' % (min_val, max_val)
     except:
         print min_val
         print max_val
@@ -113,3 +114,18 @@ def calc_MI_feat_target(column, target, num_bins):
         final_mi += p_cate_neg * np.log2(p_cate_neg / (p_cate * p_neg))
 
     return final_mi
+
+# compute statistics of numeric feature - one column
+def num_feat_stat(vals):
+    num_nan = np.sum([np.isnan(val) for val in vals]) 
+    num_inf = np.sum([np.isinf(val) for val in vals]) 
+    num_zero = np.sum(vals == 0)
+    max_val = np.max(vals)
+    min_val = np.min(vals)
+    
+    #print '%d %d %f %f' % (num_nan, num_zero, max_val, min_val)
+    
+    return num_nan, num_inf, num_zero
+
+    
+    

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, add_v22_onehot
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, add_num_comb, nan
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -42,7 +42,6 @@ print 'load data'
 train = pd.read_csv('./data/train.csv')
 test = pd.read_csv('./data/test.csv')
 
-# add nan feat
 train = compute_nan_feat(train)
 test = compute_nan_feat(test)
 
@@ -51,16 +50,10 @@ test = compute_nan_feat(test)
 # add category combination feat
 train_test = pd.concat([train, test])
 train_test = add_cate_comb(train_test)
-
-# onehot v22
-train_test = add_v22_onehot(train_test)
-train_test.drop(['v22'], axis=1, inplace=True)
-
-print 'feature dim = %d' % (train_test.shape[1])
-
+train_test = add_num_comb(train_test)
 train = train_test[train_test.target.isnull() == False]
 test = train_test[train_test.target.isnull() == True]
-#test.drop(['target'], axis=1)
+test.drop(['target'], axis=1)
 
 
 '''
@@ -95,8 +88,14 @@ for c in num_vars:
 train_feat = train.drop(train_columns_to_drop, axis=1) 
 test_feat = test.drop(test_columns_to_drop, axis=1) 
 factorize_category(train_feat)
-train_feat.fillna(-1,inplace=True)
-test_feat.fillna(-1,inplace=True)
+
+# handle numeric nan
+train_feat.fillna(nan,inplace=True)
+test_feat.fillna(nan,inplace=True)
+# handle numeric nan
+train_feat.replace(np.inf, -999, inplace=True)
+test_feat.replace(np.inf, -999, inplace=True)
+
 
 
 train_feat_final = train_feat
@@ -136,8 +135,6 @@ for plst in params_list:
     log(log_file, str(plst))
     cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
 	nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=10)
-    #cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-    #	nfold=5, metrics='logloss', show_progress=True, early_stopping_rounds=10)
 
 
 '''

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, factorize_category, nan, handle_v22
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -22,10 +22,12 @@ def get_params_list():
     plst = list(params.items())
     return plst
 
+'''
 def factorize_category(df):
     for column in df.columns:
         if df[column].dtype == 'object':
             df[column] = pd.factorize(df[column])[0]
+'''
             
 
 high_corr_columns = ['v8', 'v23', 'v25', 'v36', 'v37', 'v46', 'v51', 'v53', 'v54', 'v63', 'v73', 'v81', 'v82', 'v89', 'v92', 'v95', 'v105', 'v107', 'v108', 'v109', 'v116', 'v117', 'v118', 'v119', 'v123', 'v124', 'v128']
@@ -42,8 +44,16 @@ print 'load data'
 train = pd.read_csv('./data/train.csv')
 test = pd.read_csv('./data/test.csv')
 
+################################################
+# nan feat
 train = compute_nan_feat(train)
 test = compute_nan_feat(test)
+
+
+################################################
+# v22 feat(base64)
+train = handle_v22(train)
+test = handle_v22(test)
 
 
 ################################################
@@ -87,8 +97,8 @@ for c in num_vars:
 train_feat = train.drop(train_columns_to_drop, axis=1) 
 test_feat = test.drop(test_columns_to_drop, axis=1) 
 factorize_category(train_feat)
-train_feat.fillna(-1,inplace=True)
-test_feat.fillna(-1,inplace=True)
+train_feat.fillna(nan,inplace=True)
+test_feat.fillna(nan,inplace=True)
 
 
 train_feat_final = train_feat
@@ -99,7 +109,7 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
 # grid search
 params = get_params()
-params["eta"] = 0.01
+params["eta"] = 0.05
 
 min_child_weight_list = [1]
 subsample_list = [1]
