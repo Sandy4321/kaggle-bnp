@@ -27,6 +27,8 @@ def run(train_file, test_file, predict_res_file):
     test = pd.read_csv(test_file)
     id_test = test['ID'].values
     test = test.drop(['ID','v8','v23','v25','v31','v36','v37','v46','v51','v53','v54','v63','v73','v75','v79','v81','v82','v89','v92','v95','v105','v107','v108','v109','v110','v116','v117','v118','v119','v123','v124','v128'],axis=1)
+    if 'train' in test_file:
+        test = test.drop(['target'], axis=1)
 
     print('Clearing...')
     num_vars = ['v1', 'v2', 'v4', 'v5', 'v6', 'v7', 'v9', 'v10', 'v11',
