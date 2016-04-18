@@ -113,7 +113,7 @@ params["eta"] = 0.05
 
 min_child_weight_list = [1]
 subsample_list = [1]
-colsample_bytree_list = [0.6]
+colsample_bytree_list = [0.7]
 max_depth_list = [10]
 
 #min_child_weight_list = [1, 5, 10]

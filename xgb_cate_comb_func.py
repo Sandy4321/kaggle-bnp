@@ -35,7 +35,9 @@ def run(train_file, test_file, predict_res_file, index_file=''):
     print 'load data'
     train = pd.read_csv(train_file)
     test = pd.read_csv(test_file)
-    submission = pd.read_csv('./data/sample_submission.csv')
+    # if using stacking
+    if 'train' in test_file:
+        test = test.drop(['target'], axis=1)
 
     train = compute_nan_feat(train)
     test = compute_nan_feat(test)
@@ -49,6 +51,7 @@ def run(train_file, test_file, predict_res_file, index_file=''):
     else:
         train_test = add_cate_comb(train_test)
     train = train_test[train_test.target.isnull() == False]
+    # so test must drop target!!!!!!!
     test = train_test[train_test.target.isnull() == True]
     test = test.drop(['target'], axis=1)
 

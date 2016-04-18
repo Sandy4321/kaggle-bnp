@@ -73,10 +73,8 @@ os.system(cmd)
 cmd = gen_run_cmd('ext_func.py', train_file, test_file, ext_predict_full_file) 
 print cmd
 os.system(cmd)
-'''
 
 
-'''
 # nn model train feature
 cmd = gen_run_cmd('nn_func.py', train_1_file, train_2_file, nn_predict_1_file) 
 print cmd
@@ -98,4 +96,4 @@ print cmd
 os.system(cmd)
 cmd = gen_run_cmd('xgb_cate_comb_func.py', train_file, test_file, xgb_predict_full_file) 
 print cmd
-os.system(cmd)
+#os.system(cmd)

@@ -136,7 +136,10 @@ def add_cate_comb_reindex(train_test, idx_file):
     reidx_df = df.iloc[idx, :]
 
     for c in df.columns:
-    	train_test[c] = reidx_df[c]
+    	#train_test[c] = reidx_df[c]
+        #print train_test[c]
+    	train_test[c] = reidx_df[c].values
+        #print train_test[c]
 
     return train_test
 
