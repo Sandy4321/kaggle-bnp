@@ -74,8 +74,8 @@ def compute_nan_feat(df):
     var_list = []
     zero_list = []
     for dummy_i in xrange(df.shape[0]):
-        if dummy_i % 100 == 0:
-            print 'row = %d' % dummy_i
+        #if dummy_i % 100 == 0:
+        #    print 'row = %d' % dummy_i
         row = df.iloc[dummy_i, :]
         isnull = row.isnull()
         s = np.sum(isnull)

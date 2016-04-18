@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from preprocess import factorize_category_both
-from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, handle_v22
 
 
 def get_params():
@@ -11,7 +11,7 @@ def get_params():
     params["eta"] = 0.01
     params["min_child_weight"] = 1 
     params["subsample"] = 1   
-    params["colsample_bytree"] = 0.6
+    params["colsample_bytree"] = 0.7
     params["silent"] = 1
     params["max_depth"] = 10 
     plst = list(params.items())
@@ -31,7 +31,7 @@ test_columns_to_drop = ['ID'] + high_corr_columns
 
 
         
-xgb_num_rounds = 1450 
+xgb_num_rounds = 1350 
 num_classes = 2
 print 'load data'
 train = pd.read_csv('./data/train.csv')
@@ -44,10 +44,16 @@ test = compute_nan_feat(test)
 ################################################
 # add category combination feat
 train_test = pd.concat([train, test])
-#train_test = add_cate_comb(train_test)
+train_test = add_cate_comb(train_test)
 train = train_test[train_test.target.isnull() == False]
 test = train_test[train_test.target.isnull() == True]
 test = test.drop(['target'], axis=1)
+
+################################################
+# v22 feat(base64)
+train = handle_v22(train)
+test = handle_v22(test)
+
 
 
 train_id = train['ID'].values
@@ -77,5 +83,5 @@ test_preds = model.predict(xgtest, ntree_limit=model.best_iteration)
 
 preds_out = pd.DataFrame({"ID": test['ID'].values, "PredictedProb": test_preds})
 preds_out = preds_out.set_index('ID')
-preds_out.to_csv('xgb_cate_comb.csv')
+preds_out.to_csv('xgbr_cate_comb.csv')
 print 'finish'

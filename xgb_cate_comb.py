@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from preprocess import factorize_category_both
-from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, handle_v22
 
 
 def get_params():
@@ -31,7 +31,7 @@ test_columns_to_drop = ['ID'] + high_corr_columns
 
 
         
-xgb_num_rounds = 1450 
+xgb_num_rounds = 1150 
 num_classes = 2
 print 'load data'
 train = pd.read_csv('./data/train.csv')
@@ -48,6 +48,12 @@ train_test = add_cate_comb(train_test)
 train = train_test[train_test.target.isnull() == False]
 test = train_test[train_test.target.isnull() == True]
 test = test.drop(['target'], axis=1)
+
+################################################
+# v22 feat(base64)
+train = handle_v22(train)
+test = handle_v22(test)
+
 
 
 train_id = train['ID'].values
@@ -77,5 +83,5 @@ test_preds = model.predict(xgtest, ntree_limit=model.best_iteration)
 
 preds_out = pd.DataFrame({"ID": test['ID'].values, "PredictedProb": test_preds})
 preds_out = preds_out.set_index('ID')
-preds_out.to_csv('xgb_cate_comb.csv')
+preds_out.to_csv('xgb_cate_comb_v22_1150.csv')
 print 'finish'

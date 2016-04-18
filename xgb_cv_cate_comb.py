@@ -109,11 +109,11 @@ xgtrain = xgb.DMatrix(train_feat_final, train['target'].values)
 
 # grid search
 params = get_params()
-params["eta"] = 0.05
+params["eta"] = 0.01
 
 min_child_weight_list = [1]
 subsample_list = [1]
-colsample_bytree_list = [0.7]
+colsample_bytree_list = [0.6]
 max_depth_list = [10]
 
 #min_child_weight_list = [1, 5, 10]

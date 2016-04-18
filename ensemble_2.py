@@ -10,7 +10,7 @@ xgb_df = pd.read_csv(res_list[1])
 nn_df = pd.read_csv(res_list[2]) 
 ids = ext_df['ID'].values
 
-res_pred = 0.5 * nn_df.PredictedProb + 0.3 * ext_df.PredictedProb  + 0.2 * xgb_df.PredictedProb 
+res_pred = 0.3 * nn_df.PredictedProb + 0.5 * ext_df.PredictedProb  + 0.2 * xgb_df.PredictedProb 
 
 '''
 df = pd.read_csv(res_list[0])
@@ -26,7 +26,7 @@ res_pred /= len(res_list)
 
 preds_out = pd.DataFrame({"ID": ids, "PredictedProb": res_pred.values})
 preds_out = preds_out.set_index('ID')
-preds_out.to_csv('ensemble5.csv')
+preds_out.to_csv('ensemble10.csv')
 print 'finish'
 
 

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import cPickle as pk
-from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb
+from preprocess import find_delimiter, compute_nan_feat, add_na_bin_pca, add_cate_comb, handle_v22
 from util import get_params, log
 
 log_file = open(__file__ + '_log', 'w')
@@ -49,10 +49,16 @@ test = compute_nan_feat(test)
 ################################################
 # add category combination feat
 train_test = pd.concat([train, test])
-#train_test = add_cate_comb(train_test)
+train_test = add_cate_comb(train_test)
 train = train_test[train_test.target.isnull() == False]
 test = train_test[train_test.target.isnull() == True]
 test.drop(['target'], axis=1)
+
+################################################
+# v22 feat(base64)
+train = handle_v22(train)
+test = handle_v22(test)
+
 
 
 '''
@@ -127,7 +133,7 @@ for min_child_weight in min_child_weight_list:
 for plst in params_list:
     log(log_file, str(plst))
     cv_results = xgb.cv(plst, xgtrain, num_boost_round=xgb_num_rounds,
-	nfold=5, metrics='logloss', show_progress=True, early_stopping_rounds=10)
+	nfold=5, metrics='logloss', verbose_eval=True, early_stopping_rounds=10)
 
 
 '''
